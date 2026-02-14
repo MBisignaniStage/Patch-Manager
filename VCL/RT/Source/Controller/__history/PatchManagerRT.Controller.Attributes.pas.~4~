@@ -1,0 +1,32 @@
+unit PatchManagerRT.Controller.Attributes;
+
+interface
+
+uses
+  System.IOUtils;
+
+type
+  EntityField = class(TCustomAttribute);
+  MaxFieldLength = class(TCustomAttribute)
+  private
+    FMaxLength: Integer;
+  public
+    function MaxLength: Integer;
+    constructor Create(const AMaxLength: integer);
+  End;
+implementation
+
+
+{ MaxFieldLength }
+
+constructor MaxFieldLength.Create(const AMaxLength: integer);
+begin
+  FMaxLength := AMaxLength;
+end;
+
+function MaxFieldLength.MaxLength: Integer;
+begin
+  Result := FMaxLength;
+end;
+
+end.

@@ -1,0 +1,187 @@
+unit PatchManagerRT.Model.Patch.ToJson;
+
+interface
+uses
+  PatchManagerRT.Controller.Interfaces,
+  System.JSON,
+  System.Classes,
+  System.SysUtils,
+  System.Generics.Collections,
+  PatchManagerRT.Model.Interfaces;
+
+
+type
+  TPatchManagerRTModelPatchToJson = class(TInterfacedObject , IPatchManagerRTModelPatchToJson)
+  strict private
+    FEntity : IPatchManagerRTControllerPatchEntity;
+    FListEntity : TList<IPatchManagerRTControllerPatchEntity>;
+    FErrors : TStringList;
+    FConnection :  string;
+  public
+    procedure Entity(const AValue : IPatchManagerRTControllerPatchEntity);
+    procedure Connection(const AConnection : string);
+    function Save: boolean;
+    function Insert: boolean;
+    function GetJsonPatch: string;
+    function Load : TList<String>;
+    constructor Create;
+    destructor Destroy; override;
+    class function New: IPatchManagerRTModelPatchToJson;
+  end;
+
+implementation
+
+uses
+  Rest.Json,
+  System.IOUtils,
+  PatchManagerRT.Controller.Factory,
+  PatchManagerRT.Controller.Patch.Entity,
+  PatchManagerRT.Model.Factory,
+  PatchManagerRT.model.Log,
+  System.Rtti;
+
+
+{ TPatchManagerRTModelPatchToJson }
+
+procedure TPatchManagerRTModelPatchToJson.Connection(const AConnection: string);
+begin
+  FConnection := AConnection;
+end;
+
+constructor TPatchManagerRTModelPatchToJson.Create;
+begin
+  FErrors := TStringList.Create;
+  FEntity := TPatchManagerRTControllerFactory.New.Entity;
+  FListEntity := TList<IPatchManagerRTControllerPatchEntity>.Create;
+end;
+
+destructor TPatchManagerRTModelPatchToJson.Destroy;
+begin
+  if Assigned(FErrors) then
+    FErrors.Free;
+  if Assigned(FListEntity) then
+    FListEntity.Free;
+    inherited;
+end;
+
+procedure TPatchManagerRTModelPatchToJson.Entity(
+  const AValue: IPatchManagerRTControllerPatchEntity);
+begin
+  FEntity :=  AValue;
+end;
+//prova importazione dati da file json da utilizzare successivamente
+function TPatchManagerRTModelPatchToJson.Load: TList<String>;
+var
+  LFileStream : TFileStream;
+  LJsonStream : TStringStream;
+  LList : TList<String>;
+  LJsonValue : TJSONValue;
+  LValori : TJSONArray;
+  I : integer;
+begin
+  LJsonStream := TStringStream.Create;
+  try
+    LFileStream := TFileStream.create('C:\PatchManagerOUT\prova.json', 0);
+      try
+        LJsonStream.LoadFromStream(LFileStream);
+      finally
+        LFileStream.Free;
+      end;
+    LJsonValue := TJSONObject.ParseJSONValue(LJsonStream.DataString);
+    LList := TList<String>.Create;
+    try
+      LValori := LJsonValue.GetValue<TJSONArray>('Patches');
+      for I := 0 to LValori.count - 1 do
+      LList.add(LValori.Items[I].GetValue<string>('Command'));
+      Result := LList;
+    finally
+    LjsonValue.free;
+    LList.free;
+    end;
+  finally
+  LJsonStream.free;
+  end;
+end;
+//restitutisce la patch json formattata
+function TPatchManagerRTModelPatchToJson.GetJsonPatch: string;
+var
+  RootObject : TJSONObject;
+  LJSONArray : TJSONArray;
+  LTmpJson : TJSONValue;
+  LEntity : IPatchManagerRTControllerPatchEntity;
+begin
+  Result := '';
+  if FListEntity.IsEmpty then
+  exit;
+  RootObject := TJSONObject.Create;
+  try
+    RootObject.AddPair('Created', FListEntity[0].Created);
+    RootObject.AddPair('DbType', FEntity.DbType);
+    LJSONArray := TJSONArray.Create;
+    for LEntity in FListEntity  do
+      LJSONArray.add(LEntity.ToJSON);
+      RootObject.addpair('Patches',LJSONArray);
+      LTmpJson := TJSONObject.ParseJSONValue(RootObject.ToJSON);
+      try
+        Result := TJson.format(LTmpJson);
+      finally
+        LTmpJson.free;
+      end;
+  finally
+  RootObject.free;
+  end;
+end;
+//Inserisce la entity(patch) all'interno della lista
+function TPatchManagerRTModelPatchToJson.Insert: boolean;
+var
+  LEntity : IPatchManagerRTControllerPatchEntity;
+  LGUID : TGUID;
+begin
+//I campi non possono essere vuoti
+//  if FEntity.Description.IsEmpty or
+//    FEntity.Command.IsEmpty or
+//    FEntity.DbType.IsEmpty   then
+//  begin
+//    Result := false;
+//  exit
+//  end;
+  try
+  CreateGUID(LGUID);
+  FEntity.PatchId(LGUID);
+  FEntity.Created(FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz',now));
+  LEntity := TPatchManagerRTControllerFactory.New.Entity;
+  LEntity.CopyEntity(FEntity);
+  FListEntity.add(LEntity);
+  except
+      on e : Exception do
+      begin
+        Result := False;
+        FErrors.add(e.message);
+      end;
+  end;
+  Result := True;
+end;
+//Salva il file json contentente le varie patch
+function TPatchManagerRTModelPatchToJson.Save: boolean;
+var
+  LPatchJson : string;
+begin
+  try
+    LPatchJson := GetJsonPatch;
+    Tfile.WriteAllText(FConnection + '\Prova.json', LPatchJson);
+  except
+    on e: Exception do
+    begin
+        Result := False;
+        FErrors.add(e.Message);
+    end;
+  end;
+  Result := true;
+end;
+
+class function TPatchManagerRTModelPatchToJson.New: IPatchManagerRTModelPatchToJson;
+begin
+  Result := Self.Create;
+end;
+
+end.

@@ -1,0 +1,45 @@
+package M_PatchManager;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  rtl,
+  vcl,
+  M_PatchManagerRT,
+  TMSVCLUIPackPkgDXE15;
+
+contains
+  PatchManager.View.Patch in 'Source\View\PatchManager.View.Patch.pas' {Patch},
+  PatchManager.Frame.BasePage in 'Source\Frame\PatchManager.Frame.BasePage.pas' {BaseFrame: TFrame},
+  PatchManager.Frame.PatchPage in 'Source\Frame\PatchManager.Frame.PatchPage.pas' {PatchPage: TFrame},
+  PatchManager.Frame.ConfigurationPage in 'Source\Frame\PatchManager.Frame.ConfigurationPage.pas' {ConfigurationPage: TFrame},
+  PatchManager.Frame.StatusBar in 'Source\Frame\PatchManager.Frame.StatusBar.pas' {PatchManagerFrameStatusBar: TFrame},
+  PatchManager.Form.WizardPage in 'Source\Form\PatchManager.Form.WizardPage.pas' {WizardPage};
+
+end.

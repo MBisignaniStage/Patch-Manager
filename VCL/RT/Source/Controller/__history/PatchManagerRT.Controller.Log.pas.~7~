@@ -1,0 +1,102 @@
+unit PatchManagerRT.Controller.Log;
+
+interface
+uses
+  PatchManagerRT.Controller.Interfaces,
+  PatchManagerRT.Model.Interfaces,
+  System.classes,
+  System.SysUtils;
+
+type
+  TPatchManagerRTControllerLog = class(TInterfacedObject, IPatchManagerRTControllerLog)
+  private
+    FEntity : IPatchManagerRTControllerLogEntity;
+    FErrors : TStringList;
+    FModel : IPatchManagerRTModelLog;
+  public
+    procedure Log(const Avalue: IPatchManagerRTControllerLogEntity); overload;
+    function Log: IPatchManagerRTControllerLogEntity; overload;
+    procedure WriteLog(const ALogType : string ; const ALogInfo: string);
+    function GetLog : string;
+    procedure SaveLog;
+    class function New(AConnection : TConnectionType) : IPatchManagerRTControllerLog;
+    constructor Create(const AConnection : TConnectionType);
+    destructor Destroy; override;
+  end;
+
+implementation
+
+uses
+  PatchManagerRT.Model.Factory,
+  PatchManagerRT.Controller.Factory;
+
+
+constructor TPatchManagerRTControllerLog.Create(const AConnection : TConnectionType);
+begin
+  var LConnection := TPatchManagerRTControllerFactory.New.Connection(Aconnection, function: string
+  begin
+    var LConfig := TPatchManagerRTControllerFactory.New.Config;
+    Result := LConfig.Config.GetPath.LogDir;
+  end);
+  FEntity := TPatchManagerRTControllerFactory.New.EntityLog;
+  FModel := TPatchManagerRTModelFactory.New.Log;
+  FModel.log(FEntity);
+  FModel.Connection(LConnection.json);
+  FErrors := TStringList.create;
+end;
+
+procedure TPatchManagerRTControllerLog.Log(
+  const Avalue: IPatchManagerRTControllerLogEntity);
+begin
+  FEntity := Avalue;
+end;
+
+function TPatchManagerRTControllerLog.Log: IPatchManagerRTControllerLogEntity;
+begin
+  Result := FEntity;
+end;
+
+class function TPatchManagerRTControllerLog.New(AConnection : TConnectionType) : IPatchManagerRTControllerLog;
+begin
+  Result := Self.Create(AConnection);
+end;
+
+procedure TPatchManagerRTControllerLog.SaveLog;
+begin
+  try
+    FModel.SaveLog;
+  except
+    on e: exception do
+      begin
+        FErrors.add(e.message);
+        WriteLog(
+          '[Errore]','Salvataggio del file log fallito')
+      end;
+  end;
+end;
+
+procedure TPatchManagerRTControllerLog.WriteLog(const ALogType, ALogInfo : string);
+begin
+  FModel.WriteLog(ALogType, ALogInfo);
+end;
+
+destructor TPatchManagerRTControllerLog.Destroy;
+begin
+  if Assigned(FErrors) then
+  FErrors.free;
+  inherited;
+end;
+
+function TPatchManagerRTControllerLog.GetLog: string;
+begin
+  try
+  Result := FModel.GetLog;
+  except
+    on e: exception do
+      begin
+        Result := '';
+        FErrors.add(e.message);
+      end;
+  end;
+end;
+end.

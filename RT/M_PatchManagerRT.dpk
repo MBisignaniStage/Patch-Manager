@@ -1,0 +1,74 @@
+package M_PatchManagerRT;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  rtl,
+  RESTComponents,
+  Spring.Base,
+  Spring.Core,
+  Spring.Data,
+  Spring.Data.Designtime,
+  Spring.Extensions,
+  Spring.Persistence,
+  FireDACCommonODBC,
+  vclFireDAC;
+
+contains
+  PatchManagerRT.Controller.Interfaces in 'Source\Controller\PatchManagerRT.Controller.Interfaces.pas',
+  PatchManagerRT.Controller.Factory in 'Source\Controller\PatchManagerRT.Controller.Factory.pas',
+  PatchManagerRT.Controller.Patch.Entity in 'Source\Controller\PatchManagerRT.Controller.Patch.Entity.pas',
+  PatchManagerRT.Controller.Patch in 'Source\Controller\PatchManagerRT.Controller.Patch.pas',
+  PatchManagerRT.Model.Patch.ToJson in 'Source\Model\PatchManagerRT.Model.Patch.ToJson.pas',
+  PatchManagerRT.Model.Factory in 'Source\Model\PatchManagerRT.Model.Factory.pas',
+  PatchManagerRT.Model.Interfaces in 'Source\Model\PatchManagerRT.Model.Interfaces.pas',
+  PatchManagerRT.Controller.Attributes in 'Source\Controller\PatchManagerRT.Controller.Attributes.pas',
+  PatchManagerRT.Controller.Log.Entity in 'Source\Controller\PatchManagerRT.Controller.Log.Entity.pas',
+  PatchManagerRT.Model.Log in 'Source\Model\PatchManagerRT.Model.Log.pas',
+  PatchManagerRT.Controller.Log in 'Source\Controller\PatchManagerRT.Controller.Log.pas',
+  PatchManagerRT.Controller.Connection in 'Source\Controller\PatchManagerRT.Controller.Connection.pas',
+  PatchManagerRT.Model.Config in 'Source\Model\PatchManagerRT.Model.Config.pas',
+  PatchManagerRT.Controller.Config.Entity in 'Source\Controller\PatchManagerRT.Controller.Config.Entity.pas',
+  PatchManagerRT.Controller.Config in 'Source\Controller\PatchManagerRT.Controller.Config.pas',
+  PatchManagerRT.Crypt in 'Source\PatchManagerRT.Crypt.pas',
+  PatchManagerRT.Model.Validator in 'Source\Model\PatchManagerRT.Model.Validator.pas',
+  PatchManagerRT.Controller.Validator in 'Source\Controller\PatchManagerRT.Controller.Validator.pas',
+  PatchManagerRT.TFDConnection in 'Source\TFDConnection\PatchManagerRT.TFDConnection.pas',
+  PatchManagerRT.TFDConnection.Interfaces in 'Source\TFDConnection\PatchManagerRT.TFDConnection.Interfaces.pas',
+  PatchManagerRT.TFDConnection.Factory in 'Source\TFDConnection\PatchManagerRT.TFDConnection.Factory.pas',
+  PatchManagerRT.Controller.Wizard.Pardef.Entity in 'Source\Controller\Wizard\PatchManagerRT.Controller.Wizard.Pardef.Entity.pas',
+  PatchManagerRT.Controller.Wizard.Pardef in 'Source\Controller\Wizard\PatchManagerRT.Controller.Wizard.Pardef.pas',
+  PatchManagerRT.Messages in 'Source\PatchManagerRT.Messages.pas',
+  PatchManagerRT.Constants in 'Source\PatchManagerRT.Constants.pas',
+  PatchManagerRT.DataTypes in 'Source\DataTypes\PatchManagerRT.DataTypes.pas',
+  PatchManagerRT.DataTypes.Factory in 'Source\DataTypes\PatchManagerRT.DataTypes.Factory.pas',
+  PatchManagerRT.DataTypes.Interfaces in 'Source\DataTypes\PatchManagerRT.DataTypes.Interfaces.pas';
+
+end.
+

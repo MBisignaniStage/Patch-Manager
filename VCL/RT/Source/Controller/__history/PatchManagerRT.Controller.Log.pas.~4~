@@ -1,0 +1,85 @@
+unit PatchManagerRT.Controller.Log;
+
+interface
+uses
+  PatchManagerRT.Controller.Interfaces,
+  PatchManagerRT.Model.Interfaces,
+  System.classes,
+  System.SysUtils;
+
+type
+  TPatchManagerRTControllerLog = class(TInterfacedObject, IPatchManagerRTControllerLog)
+  private
+    FEntity : IPatchManagerRTControllerLogEntity;
+    FErrors : TStringList;
+    FModel : IPatchManagerRTModelLog;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure Log(const Avalue: IPatchManagerRTControllerLogEntity); overload;
+    function Log: IPatchManagerRTControllerLogEntity; overload;
+    procedure WriteLog(const ALogType : string ; const ALogInfo: string);
+    function GetLog : string;
+    class function New : IPatchManagerRTControllerLog;
+  end;
+
+implementation
+
+uses
+  PatchManagerRT.Model.Factory,
+  PatchManagerRT.Controller.Factory;
+
+constructor TPatchManagerRTControllerLog.Create;
+var
+  LControllerFactory : IPatchManagerRTControllerFactory;
+  LModelFactory : IPatchManagerRTModelFactory;
+begin
+  LControllerFactory :=  TPatchManagerRTControllerFactory.New;
+  LModelFactory :=  TPatchManagerRTModelFactory.New;
+  FEntity := LControllerFactory.EntityLog;
+  FModel := LModelFactory.Log;
+  FModel.log(FEntity);
+  FErrors := TStringList.create;
+end;
+
+procedure TPatchManagerRTControllerLog.Log(
+  const Avalue: IPatchManagerRTControllerLogEntity);
+begin
+  FEntity := Avalue;
+end;
+
+function TPatchManagerRTControllerLog.Log: IPatchManagerRTControllerLogEntity;
+begin
+  Result := FEntity;
+end;
+
+class function TPatchManagerRTControllerLog.New: IPatchManagerRTControllerLog;
+begin
+  Result := Self.Create;
+end;
+
+procedure TPatchManagerRTControllerLog.WriteLog(const ALogType, ALogInfo : string);
+begin
+  FModel.WriteLog(ALogType, ALogInfo);
+end;
+
+destructor TPatchManagerRTControllerLog.Destroy;
+begin
+  if Assigned(FErrors) then
+  FErrors.free;
+  inherited;
+end;
+
+function TPatchManagerRTControllerLog.GetLog: string;
+begin
+  try
+  Result := FModel.GetLog;
+  except
+    on e: exception do
+      begin
+        Result := '';
+        FErrors.add(e.message);
+      end;
+  end;
+end;
+end.

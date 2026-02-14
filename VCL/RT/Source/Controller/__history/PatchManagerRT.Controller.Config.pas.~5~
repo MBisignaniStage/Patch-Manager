@@ -1,0 +1,103 @@
+unit PatchManagerRT.Controller.Config;
+
+interface
+
+uses
+  PatchManagerRT.Controller.Interfaces,
+  PatchManagerRT.Model.Interfaces,
+  System.SysUtils,
+  System.Classes;
+
+type
+  TPatchManagerRTControllerConfig = class(TInterfacedObject , IPatchManagerRTControllerConfig)
+  private
+    FConfig : IPatchManagerRTControllerConfigEntity;
+    FModel : IPatchManagerRTModelConfig;
+    FLog : IPatchManagerRTControllerLog;
+    FErrors : TStringList;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    function Config : IPatchManagerRTControllerConfigEntity; overload;
+    procedure Config(
+      const Avalue : IPatchManagerRTControllerConfigEntity); overload;
+    procedure load;
+    function WriteConfig : boolean;
+    class function new : IPatchManagerRTControllerConfig;
+  end;
+
+implementation
+  uses
+    PatchManagerRT.Controller.Factory,
+    PatchManagerRT.Model.Factory;
+
+{ TPatchManagerRTControllerConfig }
+
+function TPatchManagerRTControllerConfig.Config: IPatchManagerRTControllerConfigEntity;
+begin
+  Result := FConfig;
+end;
+
+procedure TPatchManagerRTControllerConfig.Config(
+  const Avalue: IPatchManagerRTControllerConfigEntity);
+begin
+  FConfig := Avalue;
+end;
+
+constructor TPatchManagerRTControllerConfig.Create;
+var
+  LControllerFactory : IPatchManagerRTControllerFactory;
+  LModelFactory : IPatchManagerRTModelFactory;
+begin
+  LControllerFactory :=  TPatchManagerRTControllerFactory.New;
+  LModelFactory :=  TPatchManagerRTModelFactory.New;
+  FConfig := LControllerFactory.EntityConfig;
+  FModel := LModelFactory.Config;
+  FModel.Config(FConfig);
+  FModel.Connection(ExtractFilePath(ParamStr(0)));
+  FErrors := TStringList.Create;
+  load;
+end;
+
+destructor TPatchManagerRTControllerConfig.Destroy;
+begin
+  if Assigned(FErrors) then
+  FErrors.free;
+end;
+
+procedure TPatchManagerRTControllerConfig.load;
+begin
+  try
+    if not Fmodel.load then
+    begin
+    FConfig.GetPath.JsonDir(ExtractFilePath(ParamStr(0)));
+    FConfig.GetPath.LogDir(ExtractFilePath(ParamStr(0)));
+    end;
+    except
+      on E : exception do
+      begin
+        FErrors.add(E.Message);
+      end;
+  end;
+
+end;
+
+class function TPatchManagerRTControllerConfig.new: IPatchManagerRTControllerConfig;
+begin
+  Result := Self.Create;
+end;
+
+function TPatchManagerRTControllerConfig.WriteConfig: boolean;
+begin
+  try
+    Result := Fmodel.WriteConfig
+    except
+      on E : exception do
+      begin
+        Result := False;
+        FErrors.add(E.Message);
+      end;
+  end;
+end;
+
+end.

@@ -1,0 +1,32 @@
+unit PatchManagerRT.Model.Factory;
+
+interface
+
+uses
+  PatchManagerRT.Model.Interfaces;
+
+type
+  TPatchManagerRTModelFactory = class(TInterfacedObject, IPatchManagerRTModelFactory)
+    function ToJson: IPatchManagerRTModelPatch;
+    class function New : IPatchManagerRTModelFactory;
+  end;
+
+implementation
+
+uses
+  PatchManagerRT.Model.Patch.ToJson;
+
+
+{ TPatchManagerRTModelFactory }
+
+class function TPatchManagerRTModelFactory.New: IPatchManagerRTModelFactory;
+begin
+  Result := Self.Create;
+end;
+
+function TPatchManagerRTModelFactory.ToJson: IPatchManagerRTModelPatch;
+begin
+   Result := TPatchManagerRTModelPatchToJson.new;
+end;
+
+end.
