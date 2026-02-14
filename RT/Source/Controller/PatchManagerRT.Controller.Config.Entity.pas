@@ -23,15 +23,11 @@ type
     FLogDir : string;
   private
     constructor Create;
-////    function ValidateRequired (const AField: TRttiField;
-//      const AAttributes: TCustomAttribute;
-//      out AErrorMessage : string) : boolean;
   public
     function JsonDir : string; overload;
     procedure JsonDir(const AValue : string); overload;
     function LogDir : string; overload;
     procedure LogDir(const Avalue : string); overload;
-//    function Validate (out AErrorlist :IList<String> ) : boolean;
   end;
 
 
@@ -191,53 +187,7 @@ function TPatchManagerRTControllerConfigEntity.Path: IPatchManagerRTControllerCo
 begin
   Result := FPath;
 end;
-//potrebbe servire successivamente
-//function TPatchManagerRTControllerConfigPath.Validate(
-//  out AErrorlist: IList<String>): boolean;
-//var
-//  LField : TRttiField;
-//  LContext : TRttiContext;
-//  LAttributes : TCustomAttribute;
-//begin
-//   Result := True;
-//  AErrorlist := TCollections.CreateList<string>;
-// for LField in LContext.GetType(Self.ClassType).GetFields do
-//  begin
-//    for LAttributes in LField.GetAttributes do
-//    begin
-//      var LErrorMessage := EmptyStr;
-//      if not ValidateRequired(LField, LAttributes, LErrorMessage) then
-//      begin
-//        Result := False;
-//        AErrorList.add(LErrorMessage);
-//      end;
-//    end;
-//  end;
-//end;
-//
-//function TPatchManagerRTControllerConfigPath.ValidateRequired(
-//  const AField: TRttiField; const AAttributes: TCustomAttribute;
-//  out AErrorMessage: string): boolean;
-//begin
-//  AErrorMessage := EmptyStr;
-//  Result := true;
-//  if AAttributes is PatchManagerRT.Controller.Attributes.Required then
-//    begin
-//      case AField.FieldType.TypeKind of
-//        tkInteger, tkInt64:
-//        begin
-//          Result := (AField.GetValue(Self).AsInteger > 0);
-//        end;
-//        tkString, tkLString, tkUString, tkWideString:
-//        begin
-//          Result := not (AField.GetValue(self).AsString.IsEmpty);
-//        end;
-//
-//      end;
-//          if not Result then
-//   AErrorMessage := format(RS_PATCHMANAGER_FIELD_REQUIRED, [Afield.Name]);
-//  end;
-//end;
+
 class function TPatchManagerRTControllerConfigEntity.New: TPatchManagerRTControllerConfigEntity;
 begin
   Result := Self.Create;
