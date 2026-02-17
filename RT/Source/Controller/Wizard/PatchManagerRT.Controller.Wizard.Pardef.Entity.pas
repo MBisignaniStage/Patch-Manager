@@ -166,7 +166,7 @@ function TPatchManagerControllerWizardPardefEntity.Stropz: IDictionary<string, s
 begin
   Result := FStropz;
 end;
-//da cambiare forse è sbagliato cosi
+
 procedure TPatchManagerControllerWizardPardefEntity.Stropz(
   const AValue: IDictionary<string, string>);
 begin
